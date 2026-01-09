@@ -32,7 +32,7 @@ export function buildResolvers(cassandra: Cassandra) {
         const { vaultId } = schema.parse(args);
 
         const result = await cassandra.execute(
-          'SELECT * FROM mantlefrac.vaults WHERE network = ? AND vault_id = ?',
+          'SELECT * FROM vaults WHERE network = ? AND vault_id = ?',
           [network, vaultId],
           { prepare: true }
         );
@@ -51,7 +51,7 @@ export function buildResolvers(cassandra: Cassandra) {
         const { limit } = schema.parse(args);
 
         const result = await cassandra.execute(
-          'SELECT * FROM mantlefrac.vaults WHERE network = ? LIMIT ?',
+          'SELECT * FROM vaults WHERE network = ? LIMIT ?',
           [network, limit],
           { prepare: true }
         );
@@ -67,7 +67,7 @@ export function buildResolvers(cassandra: Cassandra) {
         const { creator, limit } = schema.parse(args);
 
         const result = await cassandra.execute(
-          'SELECT * FROM mantlefrac.vaults WHERE network = ? LIMIT ? ALLOW FILTERING',
+          'SELECT * FROM vaults WHERE network = ? LIMIT ? ALLOW FILTERING',
           [network, limit],
           { prepare: true }
         );
@@ -83,7 +83,7 @@ export function buildResolvers(cassandra: Cassandra) {
         const { listingId } = schema.parse(args);
 
         const result = await cassandra.execute(
-          'SELECT * FROM mantlefrac.listings WHERE network = ? AND listing_id = ?',
+          'SELECT * FROM listings WHERE network = ? AND listing_id = ?',
           [network, listingId],
           { prepare: true }
         );
@@ -102,7 +102,7 @@ export function buildResolvers(cassandra: Cassandra) {
         const { vaultId, limit } = schema.parse(args);
 
         const result = await cassandra.execute(
-          'SELECT * FROM mantlefrac.listings_by_vault WHERE network = ? AND vault_id = ? LIMIT ?',
+          'SELECT * FROM listings_by_vault WHERE network = ? AND vault_id = ? LIMIT ?',
           [network, vaultId, limit],
           { prepare: true }
         );
@@ -118,7 +118,7 @@ export function buildResolvers(cassandra: Cassandra) {
         const { seller, limit } = schema.parse(args);
 
         const result = await cassandra.execute(
-          'SELECT * FROM mantlefrac.listings WHERE network = ? LIMIT ? ALLOW FILTERING',
+          'SELECT * FROM listings WHERE network = ? LIMIT ? ALLOW FILTERING',
           [network, limit],
           { prepare: true }
         );
@@ -146,7 +146,7 @@ export function buildResolvers(cassandra: Cassandra) {
         const { limit, offset, filterByStatus } = schema.parse(args);
 
         const result = await cassandra.execute(
-          'SELECT * FROM mantlefrac.listings WHERE network = ? LIMIT ?',
+          'SELECT * FROM listings WHERE network = ? LIMIT ?',
           [network, limit + offset],
           { prepare: true }
         );
@@ -171,7 +171,7 @@ export function buildResolvers(cassandra: Cassandra) {
 
       async marketplaceStats() {
         const result = await cassandra.execute(
-          'SELECT * FROM mantlefrac.listings WHERE network = ?',
+          'SELECT * FROM listings WHERE network = ?',
           [network],
           { prepare: true }
         );
@@ -201,7 +201,7 @@ export function buildResolvers(cassandra: Cassandra) {
         const { poolId } = schema.parse(args);
 
         const result = await cassandra.execute(
-          'SELECT * FROM mantlefrac.pools WHERE network = ? AND pool_id = ?',
+          'SELECT * FROM pools WHERE network = ? AND pool_id = ?',
           [network, poolId],
           { prepare: true }
         );
@@ -220,7 +220,7 @@ export function buildResolvers(cassandra: Cassandra) {
         const { limit } = schema.parse(args);
 
         const result = await cassandra.execute(
-          'SELECT * FROM mantlefrac.pools WHERE network = ? LIMIT ?',
+          'SELECT * FROM pools WHERE network = ? LIMIT ?',
           [network, limit],
           { prepare: true }
         );
@@ -236,7 +236,7 @@ export function buildResolvers(cassandra: Cassandra) {
         const { tokenAddress, limit } = schema.parse(args);
 
         const result = await cassandra.execute(
-          'SELECT * FROM mantlefrac.pools WHERE network = ? LIMIT ? ALLOW FILTERING',
+          'SELECT * FROM pools WHERE network = ? LIMIT ? ALLOW FILTERING',
           [network, limit],
           { prepare: true }
         );
@@ -258,7 +258,7 @@ export function buildResolvers(cassandra: Cassandra) {
         const { poolId, limit } = schema.parse(args);
 
         const result = await cassandra.execute(
-          'SELECT * FROM mantlefrac.swaps WHERE network = ? AND pool_id = ? LIMIT ?',
+          'SELECT * FROM swaps WHERE network = ? AND pool_id = ? LIMIT ?',
           [network, poolId, limit],
           { prepare: true }
         );
@@ -272,7 +272,7 @@ export function buildResolvers(cassandra: Cassandra) {
         const { programId } = schema.parse(args);
 
         const result = await cassandra.execute(
-          'SELECT * FROM mantlefrac.distributions WHERE network = ? AND program_id = ?',
+          'SELECT * FROM distributions WHERE network = ? AND program_id = ?',
           [network, programId],
           { prepare: true }
         );
@@ -291,7 +291,7 @@ export function buildResolvers(cassandra: Cassandra) {
         const { vaultId, limit } = schema.parse(args);
 
         const result = await cassandra.execute(
-          'SELECT * FROM mantlefrac.distributions WHERE network = ? LIMIT ? ALLOW FILTERING',
+          'SELECT * FROM distributions WHERE network = ? LIMIT ? ALLOW FILTERING',
           [network, limit],
           { prepare: true }
         );
@@ -309,7 +309,7 @@ export function buildResolvers(cassandra: Cassandra) {
         const { programId, limit } = schema.parse(args);
 
         const result = await cassandra.execute(
-          'SELECT * FROM mantlefrac.claims WHERE network = ? AND program_id = ? LIMIT ?',
+          'SELECT * FROM claims WHERE network = ? AND program_id = ? LIMIT ?',
           [network, programId, limit],
           { prepare: true }
         );
@@ -325,7 +325,7 @@ export function buildResolvers(cassandra: Cassandra) {
         const { account, limit } = schema.parse(args);
 
         const result = await cassandra.execute(
-          'SELECT * FROM mantlefrac.claims WHERE network = ? LIMIT ? ALLOW FILTERING',
+          'SELECT * FROM claims WHERE network = ? LIMIT ? ALLOW FILTERING',
           [network, limit],
           { prepare: true }
         );
@@ -343,7 +343,7 @@ export function buildResolvers(cassandra: Cassandra) {
         const { limit } = schema.parse(args);
 
         const result = await cassandra.execute(
-          'SELECT * FROM mantlefrac.events WHERE network = ? LIMIT ?',
+          'SELECT * FROM events WHERE network = ? LIMIT ?',
           [network, limit],
           { prepare: true }
         );
@@ -359,7 +359,7 @@ export function buildResolvers(cassandra: Cassandra) {
         const { contract, limit } = schema.parse(args);
 
         const result = await cassandra.execute(
-          'SELECT * FROM mantlefrac.events WHERE network = ? LIMIT ? ALLOW FILTERING',
+          'SELECT * FROM events WHERE network = ? LIMIT ? ALLOW FILTERING',
           [network, limit],
           { prepare: true }
         );

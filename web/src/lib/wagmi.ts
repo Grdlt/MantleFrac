@@ -1,34 +1,24 @@
 import { http, createConfig } from 'wagmi';
-import { injected, walletConnect, coinbaseWallet } from 'wagmi/connectors';
+import { injected } from 'wagmi/connectors';
 import { mantleMainnet, mantleSepoliaTestnet, defaultChain } from './chains';
-
-// WalletConnect Project ID - Get from https://cloud.walletconnect.com
-const WALLETCONNECT_PROJECT_ID = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '';
 
 /**
  * Wagmi configuration for MantleFrac
+ * 
+ * Note: WalletConnect and CoinbaseWallet removed to avoid SSR issues.
+ * Only injected (MetaMask) is used for now.
+ * To enable WalletConnect, set NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID in .env.local
  */
 export const wagmiConfig = createConfig({
   chains: [mantleSepoliaTestnet, mantleMainnet],
   connectors: [
     injected(),
-    walletConnect({
-      projectId: WALLETCONNECT_PROJECT_ID,
-      metadata: {
-        name: 'MantleFrac',
-        description: 'RWA Fractionalization Platform on Mantle',
-        url: 'https://mantlefrac.xyz',
-        icons: ['https://mantlefrac.xyz/icon.png'],
-      },
-    }),
-    coinbaseWallet({
-      appName: 'MantleFrac',
-    }),
   ],
   transports: {
     [mantleSepoliaTestnet.id]: http(),
     [mantleMainnet.id]: http(),
   },
+  ssr: true, // Enable SSR support
 });
 
 /**
