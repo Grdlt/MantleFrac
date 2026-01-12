@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { ENV } from './config.js';
 
 export function buildResolvers(cassandra: Cassandra) {
-  const network = ENV.NETWORK;
+  const currentNetwork = ENV.NETWORK;
 
   return {
     Query: {
@@ -27,9 +27,10 @@ export function buildResolvers(cassandra: Cassandra) {
       },
 
       // Vaults
-      async vault(_: unknown, args: { vaultId: string }) {
+      async vault(_: unknown, args: { network?: string; vaultId: string }) {
         const schema = z.object({ vaultId: z.string().min(1) });
         const { vaultId } = schema.parse(args);
+        const network = args.network || currentNetwork;
 
         const result = await cassandra.execute(
           'SELECT * FROM vaults WHERE network = ? AND vault_id = ?',
@@ -43,12 +44,13 @@ export function buildResolvers(cassandra: Cassandra) {
         return mapVaultRow(row);
       },
 
-      async vaults(_: unknown, args: { limit?: number; offset?: number }) {
+      async vaults(_: unknown, args: { network?: string; limit?: number; offset?: number }) {
         const schema = z.object({
           limit: z.number().int().min(1).max(100).default(50),
           offset: z.number().int().min(0).default(0),
         });
         const { limit } = schema.parse(args);
+        const network = args.network || currentNetwork;
 
         const result = await cassandra.execute(
           'SELECT * FROM vaults WHERE network = ? LIMIT ?',
@@ -59,12 +61,13 @@ export function buildResolvers(cassandra: Cassandra) {
         return result.rows.map(mapVaultRow);
       },
 
-      async vaultsByCreator(_: unknown, args: { creator: string; limit?: number }) {
+      async vaultsByCreator(_: unknown, args: { network?: string; creator: string; limit?: number }) {
         const schema = z.object({
           creator: z.string().min(1),
           limit: z.number().int().min(1).max(100).default(50),
         });
         const { creator, limit } = schema.parse(args);
+        const network = args.network || currentNetwork;
 
         const result = await cassandra.execute(
           'SELECT * FROM vaults WHERE network = ? LIMIT ? ALLOW FILTERING',
@@ -77,6 +80,21 @@ export function buildResolvers(cassandra: Cassandra) {
           .map(mapVaultRow);
       },
 
+      // Vault details (返回模拟/默认数据)
+      vaultMaxSupply: () => "0",
+      vaultTotalSupply: () => "0",
+      vaultEscrowBalance: () => "0",
+      vaultTreasuryBalance: () => "0",
+      vaultTreasuryShareBalance: () => "0",
+      vaultLockedSeedShares: () => "0",
+      vaultTeamShareBalances: () => "0",
+      vaultTeamLPShareEquivalent: () => "0",
+      vaultCirculating: () => "0",
+      vaultNftDisplay: () => null,
+
+      // Share balances
+      shareBalance: () => ({ balance: "0" }),
+
       // Listings
       async listing(_: unknown, args: { listingId: string }) {
         const schema = z.object({ listingId: z.string().min(1) });
@@ -84,7 +102,7 @@ export function buildResolvers(cassandra: Cassandra) {
 
         const result = await cassandra.execute(
           'SELECT * FROM listings WHERE network = ? AND listing_id = ?',
-          [network, listingId],
+          [currentNetwork, listingId],
           { prepare: true }
         );
 
@@ -94,12 +112,13 @@ export function buildResolvers(cassandra: Cassandra) {
         return mapListingRow(row);
       },
 
-      async listings(_: unknown, args: { vaultId: string; limit?: number }) {
+      async listings(_: unknown, args: { network?: string; vaultId: string; limit?: number }) {
         const schema = z.object({
           vaultId: z.string().min(1),
           limit: z.number().int().min(1).max(100).default(50),
         });
         const { vaultId, limit } = schema.parse(args);
+        const network = args.network || currentNetwork;
 
         const result = await cassandra.execute(
           'SELECT * FROM listings_by_vault WHERE network = ? AND vault_id = ? LIMIT ?',
@@ -119,7 +138,7 @@ export function buildResolvers(cassandra: Cassandra) {
 
         const result = await cassandra.execute(
           'SELECT * FROM listings WHERE network = ? LIMIT ? ALLOW FILTERING',
-          [network, limit],
+          [currentNetwork, limit],
           { prepare: true }
         );
 
@@ -147,7 +166,7 @@ export function buildResolvers(cassandra: Cassandra) {
 
         const result = await cassandra.execute(
           'SELECT * FROM listings WHERE network = ? LIMIT ?',
-          [network, limit + offset],
+          [currentNetwork, limit + offset],
           { prepare: true }
         );
 
@@ -172,7 +191,7 @@ export function buildResolvers(cassandra: Cassandra) {
       async marketplaceStats() {
         const result = await cassandra.execute(
           'SELECT * FROM listings WHERE network = ?',
-          [network],
+          [currentNetwork],
           { prepare: true }
         );
 
@@ -202,7 +221,7 @@ export function buildResolvers(cassandra: Cassandra) {
 
         const result = await cassandra.execute(
           'SELECT * FROM pools WHERE network = ? AND pool_id = ?',
-          [network, poolId],
+          [currentNetwork, poolId],
           { prepare: true }
         );
 
@@ -212,12 +231,13 @@ export function buildResolvers(cassandra: Cassandra) {
         return mapPoolRow(row);
       },
 
-      async pools(_: unknown, args: { limit?: number; offset?: number }) {
+      async pools(_: unknown, args: { network?: string; limit?: number; offset?: number }) {
         const schema = z.object({
           limit: z.number().int().min(1).max(100).default(50),
           offset: z.number().int().min(0).default(0),
         });
         const { limit } = schema.parse(args);
+        const network = args.network || currentNetwork;
 
         const result = await cassandra.execute(
           'SELECT * FROM pools WHERE network = ? LIMIT ?',
@@ -237,7 +257,7 @@ export function buildResolvers(cassandra: Cassandra) {
 
         const result = await cassandra.execute(
           'SELECT * FROM pools WHERE network = ? LIMIT ? ALLOW FILTERING',
-          [network, limit],
+          [currentNetwork, limit],
           { prepare: true }
         );
 
@@ -250,6 +270,27 @@ export function buildResolvers(cassandra: Cassandra) {
           .map(mapPoolRow);
       },
 
+      // Placeholder for poolsByAsset
+      async poolsByAsset(_: unknown, args: { network: string; assetSymbol: string; limit?: number }) {
+        return [];
+      },
+
+      async allPools(_: unknown, args: { network: string; limit?: number }) {
+        const result = await cassandra.execute(
+          'SELECT * FROM pools WHERE network = ? LIMIT ?',
+          [args.network || currentNetwork, args.limit || 50],
+          { prepare: true }
+        );
+        return result.rows.map(row => ({
+          poolId: row.get('pool_id'),
+          tokenA: row.get('token_a'),
+          tokenB: row.get('token_b'),
+          reserveA: row.get('reserve_a'),
+          reserveB: row.get('reserve_b'),
+          feeBps: row.get('fee_bps'),
+        }));
+      },
+
       async swaps(_: unknown, args: { poolId: string; limit?: number }) {
         const schema = z.object({
           poolId: z.string().min(1),
@@ -259,12 +300,27 @@ export function buildResolvers(cassandra: Cassandra) {
 
         const result = await cassandra.execute(
           'SELECT * FROM swaps WHERE network = ? AND pool_id = ? LIMIT ?',
-          [network, poolId, limit],
+          [currentNetwork, poolId, limit],
           { prepare: true }
         );
 
         return result.rows.map(mapSwapRow);
       },
+
+      // AMM placeholders
+      ammQuote: () => ({ amountIn: "0", amountOut: "0" }),
+      ammFeeParams: () => ({ feeBps: 30, protocolFeeBps: 0 }),
+      priceTvl: () => null,
+
+      // Fee placeholders
+      feeSchedule: () => ({ current: { feeBps: 0, vaultSplitBps: 0, protocolSplitBps: 0 } }),
+      feeParams: () => ({ feeBps: 0, vaultSplitBps: 0, protocolSplitBps: 0 }),
+      feeTotals: () => ({ amountTotal: "0", vaultTotal: "0", protocolTotal: "0" }),
+      fees: () => [],
+      quoteWithFees: () => ({ grossAmount: "0", feeAmount: "0", netAmount: "0" }),
+
+      // Platform
+      platformTreasuryBalance: () => "0",
 
       // Distributions
       async distribution(_: unknown, args: { programId: string }) {
@@ -273,7 +329,7 @@ export function buildResolvers(cassandra: Cassandra) {
 
         const result = await cassandra.execute(
           'SELECT * FROM distributions WHERE network = ? AND program_id = ?',
-          [network, programId],
+          [currentNetwork, programId],
           { prepare: true }
         );
 
@@ -292,7 +348,7 @@ export function buildResolvers(cassandra: Cassandra) {
 
         const result = await cassandra.execute(
           'SELECT * FROM distributions WHERE network = ? LIMIT ? ALLOW FILTERING',
-          [network, limit],
+          [currentNetwork, limit],
           { prepare: true }
         );
 
@@ -310,7 +366,7 @@ export function buildResolvers(cassandra: Cassandra) {
 
         const result = await cassandra.execute(
           'SELECT * FROM claims WHERE network = ? AND program_id = ? LIMIT ?',
-          [network, programId, limit],
+          [currentNetwork, programId, limit],
           { prepare: true }
         );
 
@@ -326,7 +382,7 @@ export function buildResolvers(cassandra: Cassandra) {
 
         const result = await cassandra.execute(
           'SELECT * FROM claims WHERE network = ? LIMIT ? ALLOW FILTERING',
-          [network, limit],
+          [currentNetwork, limit],
           { prepare: true }
         );
 
@@ -334,6 +390,15 @@ export function buildResolvers(cassandra: Cassandra) {
           .filter((row) => row.get('account')?.toLowerCase() === account.toLowerCase())
           .map(mapClaimRow);
       },
+
+      // Availability (always true for mock)
+      symbolAvailable: () => ({ available: true }),
+      vaultIdAvailable: () => ({ available: true }),
+
+      // NFT (mock)
+      nftCollections: () => [],
+      collectionIds: () => [],
+      nftDisplay: () => null,
 
       // Events
       async events(_: unknown, args: { limit?: number }) {
@@ -344,7 +409,7 @@ export function buildResolvers(cassandra: Cassandra) {
 
         const result = await cassandra.execute(
           'SELECT * FROM events WHERE network = ? LIMIT ?',
-          [network, limit],
+          [currentNetwork, limit],
           { prepare: true }
         );
 
@@ -360,7 +425,7 @@ export function buildResolvers(cassandra: Cassandra) {
 
         const result = await cassandra.execute(
           'SELECT * FROM events WHERE network = ? LIMIT ? ALLOW FILTERING',
-          [network, limit],
+          [currentNetwork, limit],
           { prepare: true }
         );
 
@@ -368,6 +433,10 @@ export function buildResolvers(cassandra: Cassandra) {
           .filter((row) => row.get('contract')?.toLowerCase() === contract.toLowerCase())
           .map(mapEventRow);
       },
+    },
+
+    Mutation: {
+      registerVaultFromNFT: () => ({ txId: "0x0000000000000000000000000000000000000000000000000000000000000000" }),
     },
   };
 }
@@ -388,6 +457,8 @@ function mapVaultRow(row: any) {
     createdAt: row.get('created_at')?.toISOString?.() || null,
     blockNumber: row.get('block_number'),
     txHash: row.get('tx_hash'),
+    // Add default mock values for missing columns
+    collection: null,
   };
 }
 
