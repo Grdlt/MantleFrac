@@ -14,7 +14,7 @@
 
 @font-face {
   font-family: "Paper Mono";
-  src: local("Paper Mono Medium"), local("PaperMono-Medium"), url("/fonts/paper-mono/PaperMono-Medium.woff2") format("woff2");
+  src: local("Paper Mono Medium"), local("PaperMono-Medium"), url("/fonts/paper-mono/PaperMono-Regular.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -22,7 +22,7 @@
 
 @font-face {
   font-family: "Paper Mono";
-  src: local("Paper Mono Bold"), local("PaperMono-Bold"), url("/fonts/paper-mono/PaperMono-Bold.woff2") format("woff2");
+  src: local("Paper Mono Bold"), local("PaperMono-Bold"), url("/fonts/paper-mono/PaperMono-Regular.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
