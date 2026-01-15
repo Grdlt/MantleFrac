@@ -53,7 +53,7 @@ export default async function VaultRow({ v }: { v: Vault }) {
               {nft?.name || v.vaultId}
             </div>
             <div className="text-sm text-neutral-400">
-              {v.collection} #{v.tokenId} â€¢ {v.shareSymbol} â€¢ {v.state}
+              {v.collection} #{v.tokenId} â€?{v.shareSymbol} â€?{v.state}
             </div>
             <div className="mt-1 flex flex-wrap gap-2 text-[11px] text-neutral-500">
               <span className="rounded border border-neutral-700 px-2 py-0.5">
@@ -79,10 +79,10 @@ export default async function VaultRow({ v }: { v: Vault }) {
             </div>
             <div className="rounded border border-neutral-800 bg-neutral-900 p-2 col-span-2">
               <div className="text-[11px] text-neutral-500">
-                Fees (schedule) â€¢ Treasury (on-chain)
+                Fees (schedule) â€?Treasury (on-chain)
               </div>
               <div className="font-mono text-neutral-100 text-sm">
-                {feeStr} â€¢ {treasury}
+                {feeStr} â€?{treasury}
               </div>
             </div>
           </div>

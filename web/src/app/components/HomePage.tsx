@@ -1,185 +1,117 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 
-export default function MandelbrotASCII({
-  onConnect,
-}: {
-  onConnect: () => void;
-}) {
+interface Particle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  radius: number;
+  color: string;
+  alpha: number;
+  targetAlpha: number;
+}
+
+import { ScrambleText } from "./ScrambleText";
+
+export default function HomePage({ onConnect }: { onConnect: () => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>(0);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const ASCII_CHARS = " .:-=+*#%@";
-
-    let frame = 0;
-
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-
-    const fontSize = 12;
-    ctx.font = `${fontSize}px monospace`;
-    const charWidth = ctx.measureText("M").width;
-    const charHeight = fontSize * 1.2;
-
-    const cols = Math.floor(canvas.width / charWidth);
-    const rows = Math.floor(canvas.height / charHeight);
-
-    const mandelbrot = (x: number, y: number, maxIter: number): number => {
-      let real = x;
-      let imag = y;
-      let n = 0;
-
-      while (n < maxIter) {
-        const real2 = real * real;
-        const imag2 = imag * imag;
-
-        if (real2 + imag2 > 4) break;
-
-        const newReal = real2 - imag2 + x;
-        imag = 2 * real * imag + y;
-        real = newReal;
-        n++;
-      }
-
-      return n;
-    };
-
-    const animate = () => {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      frame++;
-
-      const zoomSpeed = 0.5;
-      const startZoom = 700;
-      const zoom = startZoom * 1.02 ** (frame * zoomSpeed ** 2);
-
-      const centerX = -0.743643887037151;
-      const centerY = 0.13182590420533;
-
-      const maxIterations = Math.min(
-        100 + Math.floor(Math.log2(zoom) * 20),
-        2000
-      );
-
-      ctx.font = `${fontSize}px monospace`;
-
-      for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-          const x = centerX + (col - cols / 2) / (cols / 3) / zoom;
-          const y = centerY + (row - rows / 2) / (rows / 3) / zoom;
-
-          const iterations = mandelbrot(x, y, maxIterations);
-
-          let charIndex: number;
-          if (iterations === maxIterations) {
-            charIndex = 0;
-          } else {
-            charIndex = Math.floor(
-              (iterations / maxIterations) * (ASCII_CHARS.length - 1)
-            );
-          }
-
-          const char = ASCII_CHARS[charIndex];
-
-          const hue = (iterations / maxIterations) * 360 + frame * 0.5;
-          const saturation = iterations === maxIterations ? 0 : 75;
-          const lightness =
-            iterations === maxIterations
-              ? 0
-              : 30 + (iterations / maxIterations) * 30;
-
-          ctx.shadowBlur = 8;
-          ctx.shadowColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-
-          ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-          ctx.fillText(char, col * charWidth, row * charHeight);
-
-          ctx.shadowBlur = 0;
-        }
-      }
-
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => {
-      window.removeEventListener("resize", resizeCanvas);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, []);
 
   return (
-    <div className="relative min-h-screen bg-black overflow-hidden">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
-
+    <div className="relative min-h-screen bg-[#08080c] overflow-hidden">
+      {/* Custom Background Image */}
       <div
-        className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-black pointer-events-none"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-deep-drift"
         style={{
-          background:
-            "radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.8) 100%)",
+          backgroundImage: 'url(/background_v3.png)',
+          filter: 'contrast(1.3) brightness(1.5)',
+          opacity: 1
         }}
       />
 
-      <div
-        className="absolute inset-0 pointer-events-none opacity-10"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)",
-        }}
-      />
+      {/* Overlay removed for maximum visibility */}
 
-      {/* Connect Wallet Button Overlay */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
-        {/* Subtle dark overlay for better text contrast */}
-        <div className="absolute inset-0 bg-gradient-radial from-transparent via-black/20 to-black/60 pointer-events-none" />
+      {/* Main Content */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
+        <div className="text-center max-w-4xl mx-auto">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm mb-8">
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-xs text-neutral-400 font-medium">
+              <ScrambleText text="Live on Mantle Sepolia Testnet" />
+            </span>
+          </div>
 
-        <div className="text-center space-y-6 z-10 max-w-xl px-4 relative">
-          {/* Frosted glass backdrop for text */}
-          <div className="absolute inset-0 -inset-x-6 -inset-y-8 bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl pointer-events-none" />
+          {/* Logo */}
+          <div className="mb-8 select-none">
+            <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter cursor-default">
+              <span className="text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.15)] inline-block">
+                {"Mantle".split("").map((char, i) => (
+                  <span
+                    key={`mantle-${i}`}
+                    className="animate-jump-in inline-block hover:animate-bounce"
+                    style={{ animationDelay: `${i * 0.1}s` }}
+                  >
+                    {char}
+                  </span>
+                ))}
+              </span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-purple-400 to-secondary drop-shadow-[0_0_30px_var(--color-primary)] inline-block">
+                {"Frac".split("").map((char, i) => (
+                  <span
+                    key={`frac-${i}`}
+                    className="animate-jump-in inline-block hover:animate-bounce"
+                    style={{ animationDelay: `${(i + 6) * 0.1}s` }}
+                  >
+                    {char}
+                  </span>
+                ))}
+              </span>
+            </h1>
+          </div>
 
-          <div className="relative space-y-4 py-6">
-            <div className="space-y-3">
-              <h1 className="text-3xl md:text-5xl font-bold text-white mb-1 drop-shadow-[0_0_20px_rgba(0,0,0,0.8)] tracking-tight">
-                MantleFrac
-              </h1>
-              <div className="h-px w-24 bg-gradient-to-r from-transparent via-white/50 to-transparent mx-auto shadow-[0_0_8px_rgba(255,255,255,0.3)]" />
-            </div>
-            <p className="text-white/95 text-lg md:text-xl mb-2 drop-shadow-[0_0_15px_rgba(0,0,0,0.9)] font-medium tracking-wide">
-              RWA Fractionalization on Mantle
-            </p>
-            <p className="text-neutral-300/80 text-sm md:text-base mb-6 drop-shadow-[0_0_10px_rgba(0,0,0,0.8)] font-light max-w-md mx-auto leading-relaxed">
-              <span className="text-neutral-200/90 font-normal">
-                Make singular NFTs
-              </span>{" "}
-              into <span className="text-white/90 font-medium">infinite</span>{" "}
-              tradable fractions
-            </p>
+          {/* Tagline */}
+          <p className="text-xl md:text-2xl lg:text-3xl text-neutral-300 font-light mb-4 max-w-2xl mx-auto leading-relaxed h-[3.5rem] flex items-center justify-center">
+            <ScrambleText
+              text="Turn NFTs into Liquid Assets"
+              className="inline-block"
+              startDelay={500}
+            />
+          </p>
+
+          <p className="text-neutral-500 mb-12 max-w-xl mx-auto h-6 flex items-center justify-center">
+            <ScrambleText
+              text="Fractionalize and trade instantly on Mantle Network."
+              className="inline-block"
+              startDelay={1500}
+              scrambleSpeed={20}
+            />
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
             <Button
               onClick={onConnect}
               size="lg"
-              className="relative bg-gradient-to-r from-neutral-800/90 via-neutral-700/90 to-neutral-800/90 text-white hover:from-neutral-700 hover:via-neutral-600 hover:to-neutral-700 border border-white/30 hover:border-white/50 text-base px-8 py-5 font-medium shadow-[0_0_30px_rgba(0,0,0,0.8)] backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(0,0,0,0.9)]"
+              variant="gradient"
+              className="text-lg px-12 py-7 font-bold rounded-full shadow-[0_0_40px_-10px_var(--color-primary)] hover:shadow-[0_0_60px_-10px_var(--color-secondary)] transition-all hover:scale-105"
             >
               Connect Wallet
             </Button>
           </div>
+
+
+          {/* Stats removed as requested */}
+
+        </div>
+
+        {/* Footer */}
+        <div className="absolute bottom-8 left-0 right-0 text-center">
+          <p className="text-neutral-600 text-xs font-mono uppercase tracking-widest">
+            Powered by Mantle Network
+          </p>
         </div>
       </div>
     </div>

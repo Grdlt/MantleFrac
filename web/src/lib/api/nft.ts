@@ -37,7 +37,7 @@ export async function getCollectionIds(
 export type NftDisplay = {
   name?: string;
   description?: string;
-  thumbnail?: string;
+  thumbnail?: string; imageUrl?: string;
 } | null;
 
 export async function getNftDisplay(
@@ -46,7 +46,7 @@ export async function getNftDisplay(
   tokenId: string
 ): Promise<NftDisplay> {
   const query = `query($network:String!,$account:String!,$publicPath:String!,$tokenId:String!){
-    nftDisplay(network:$network, account:$account, publicPath:$publicPath, tokenId:$tokenId){ name description thumbnail }
+    nftDisplay(network:$network, account:$account, publicPath:$publicPath, tokenId:$tokenId){ name description imageUrl }
   }`;
   const data = await gqlFetch<{ nftDisplay: NftDisplay }>(query, {
     network: DEFAULT_NETWORK,
@@ -54,5 +54,5 @@ export async function getNftDisplay(
     publicPath,
     tokenId,
   });
-  return data.nftDisplay ?? null;
+  return { ...data.nftDisplay, thumbnail: data.nftDisplay?.imageUrl } ?? null;
 }

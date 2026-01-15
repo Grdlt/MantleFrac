@@ -122,7 +122,10 @@ thead th,
   font-family: var(--font-geist-sans);
 }
 
-code, pre, kbd, samp {
+code,
+pre,
+kbd,
+samp {
   font-family: var(--font-paper-mono);
 }
 
@@ -131,43 +134,130 @@ body {
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  /* Dark Mode Palette - Binance-Inspired Gold/Amber Theme */
+  --background: oklch(0.10 0.01 60);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  --card: oklch(0.14 0.01 60);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
+  --popover: oklch(0.14 0.01 60);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
+  /* Primary: Binance Gold #F0B90B */
+  --primary: oklch(0.80 0.18 85);
+  --primary-foreground: oklch(0.12 0.02 60);
+  /* Secondary: Warm Amber/Orange */
+  --secondary: oklch(0.70 0.15 55);
+  --secondary-foreground: oklch(0.12 0.02 60);
+  --muted: oklch(0.20 0.01 60);
+  --muted-foreground: oklch(0.65 0 0);
+  --accent: oklch(0.25 0.05 85);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
+  --destructive: oklch(0.55 0.22 25);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 8%);
+  --ring: oklch(0.80 0.18 85);
+  --chart-1: oklch(0.80 0.18 85);
+  --chart-2: oklch(0.70 0.15 55);
+  --chart-3: oklch(0.65 0.12 40);
+  --chart-4: oklch(0.55 0.10 30);
+  --chart-5: oklch(0.85 0.08 90);
+  --sidebar: oklch(0.12 0.01 60);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-primary: oklch(0.80 0.18 85);
+  --sidebar-primary-foreground: oklch(0.12 0.02 60);
+  --sidebar-accent: oklch(0.20 0.03 85);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.80 0.18 85);
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-black/40 backdrop-blur-md border border-white/10;
+  }
+
+  .glass-card-hover {
+    @apply transition-all duration-300 hover:bg-black/60 hover:border-primary/50 hover:shadow-[0_0_20px_-5px_var(--color-primary)];
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-400 to-secondary;
+  }
+
+  .border-gradient {
+    @apply border-transparent bg-linear-to-r from-primary to-secondary bg-clip-border;
+  }
+
+  /* Jump In Animation */
+  @keyframes jump-in {
+    0% {
+      transform: translateY(-120%);
+      opacity: 0;
+    }
+
+    40% {
+      transform: translateY(20%);
+      opacity: 1;
+    }
+
+    65% {
+      transform: translateY(-10%);
+    }
+
+    80% {
+      transform: translateY(5%);
+    }
+
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-jump-in {
+    animation: jump-in 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+    display: inline-block;
+  }
+
+  /* Deep Drift Animation */
+  @keyframes deep-drift {
+    0% {
+      transform: scale(1.1) translate(0, 0);
+    }
+
+    33% {
+      transform: scale(1.15) translate(-1%, 1%);
+    }
+
+    66% {
+      transform: scale(1.12) translate(1%, -0.5%);
+    }
+
+    100% {
+      transform: scale(1.1) translate(0, 0);
+    }
+  }
+
+  .animate-deep-drift {
+    animation: deep-drift 30s ease-in-out infinite;
+  }
+
+  /* Shine Animation */
+  @keyframes shine {
+    from {
+      transform: translateX(-100%) skewX(-15deg);
+    }
+
+    to {
+      transform: translateX(200%) skewX(-15deg);
+    }
+  }
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -184,6 +274,7 @@ body {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -194,6 +285,7 @@ body {
     transform: scale(1);
     opacity: 1;
   }
+
   100% {
     transform: scale(1.5);
     opacity: 0;

@@ -1,6 +1,6 @@
 # MantleFrac: RWA Fractionalization Platform on Mantle
 
-> Transform any NFT or RWA into tradeable shares - A complete DeFi platform for Real World Asset tokenization on Mantle Network
+Transform any NFT or RWA into tradeable shares - A complete DeFi platform for Real World Asset tokenization on Mantle Network
 
 MantleFrac is a production-ready RWA (Real World Assets) fractionalization platform built on Mantle Network.
 
@@ -29,31 +29,10 @@ Real World Assets (RWAs) like real estate, art, and collectibles are traditional
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                      Frontend (Next.js)                      │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
-│  │ ConnectBtn  │  │ VaultPage   │  │ MarketplacePage     │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    Smart Contracts (Solidity)                │
-│  ┌───────────────┐  ┌─────────────┐  ┌─────────────────┐   │
-│  │MantleFracVault│  │ Marketplace │  │ConstantProduct  │   │
-│  │               │  │             │  │     AMM         │   │
-│  └───────────────┘  └─────────────┘  └─────────────────┘   │
-│  ┌───────────────┐  ┌─────────────┐                        │
-│  │VaultShareToken│  │ Distributor │                        │
-│  │   (ERC-20)    │  │             │                        │
-│  └───────────────┘  └─────────────┘                        │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                     Mantle Network                           │
-│            Low Gas • High Throughput • EVM Compatible        │
-└─────────────────────────────────────────────────────────────┘
+Front End (Next.js)
+   |
+   v
+Smart Contracts (Solidity) --> Mantle Network
 ```
 
 ## Quick Start
@@ -111,7 +90,7 @@ forge script script/Deploy.s.sol:DeployTestnet --rpc-url https://rpc.sepolia.man
 | MantleFracVault.sol | Core vault management, NFT custody, share token deployment |
 | VaultShareToken.sol | ERC-20 share token with transfer modes and max supply |
 | Marketplace.sol | P2P listings with atomic swaps and fee collection |
-| ConstantProductAMM.sol | x*y=k AMM with LP tokens |
+| ConstantProductAMM.sol | Constant product AMM with LP tokens |
 | Distributor.sol | Snapshot-based dividend distribution |
 
 ## Network Configuration
@@ -143,7 +122,7 @@ MantleFrac/
 
 - Smart Contracts: Solidity 0.8.24, OpenZeppelin, Foundry
 - Frontend: Next.js 15, React 19, wagmi, viem, TailwindCSS
-- Backend: Node.js, TypeScript, Astra DB (Cassandra)
+- Backend: Node.js, TypeScript, SQLite
 - Infrastructure: Vercel, Render
 
 ## Security
@@ -157,6 +136,3 @@ MantleFrac/
 
 MIT
 
-## Team
-
-Built for Mantle Global Hackathon 2025

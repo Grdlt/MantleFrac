@@ -83,7 +83,7 @@ export default async function MarketplacePreview() {
           href="/marketplace"
           className="text-xs text-neutral-300 hover:text-neutral-100"
         >
-          View All â†’
+          View All â†?
         </Link>
       </div>
 

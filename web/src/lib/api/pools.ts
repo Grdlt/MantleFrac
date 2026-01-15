@@ -96,8 +96,10 @@ export async function getAmmQuote(params: {
   const query = `
     query AmmQuote($network: String!, $poolOwner: String!, $poolId: String!, $direction: String!, $amountIn: String!) {
       ammQuote(network: $network, poolOwner: $poolOwner, poolId: $poolId, direction: $direction, amountIn: $amountIn) {
-        in
-        out
+      ammQuote(network: $network, poolOwner: $poolOwner, poolId: $poolId, direction: $direction, amountIn: $amountIn) {
+        amountIn
+        amountOut
+      }
       }
     }
   `;
@@ -105,7 +107,7 @@ export async function getAmmQuote(params: {
     network: DEFAULT_NETWORK,
     ...params,
   });
-  return res.ammQuote;
+  return { in: res.ammQuote.amountIn, out: res.ammQuote.amountOut };
 }
 
 export async function getAmmQuoteWithFees(params: {

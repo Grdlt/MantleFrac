@@ -12,7 +12,7 @@ export async function fetchListings(vaultId: string): Promise<Listing[]> {
   const query = `
     query Listings($network: String!, $vaultId: String!, $limit: Int!) {
       listings(network: $network, vaultId: $vaultId, limit: $limit) {
-        network vaultId listingId seller priceAsset priceAmount amount status createdAt
+        network vaultId listingId seller priceAsset priceAmount shareAmount status createdAt
       }
     }
   `;
@@ -23,7 +23,7 @@ export async function fetchListings(vaultId: string): Promise<Listing[]> {
     vaultId,
     limit: 50,
   });
-  return data.listings || [];
+  return (data.listings || []).map(l => ({ ...l, amount: l.shareAmount }));
 }
 
 export async function prepareCreateListing(input: {
@@ -70,13 +70,13 @@ export async function fetchVaultFTMeta(
   const ft = data?.ft as { address?: string; name?: string } | undefined;
   const meta = data?.meta as
     | {
-        name?: string;
-        symbol?: string;
-        decimals?: string;
-        totalSupply?: string;
-        maxSupply?: string;
-        contractName?: string;
-      }
+      name?: string;
+      symbol?: string;
+      decimals?: string;
+      totalSupply?: string;
+      maxSupply?: string;
+      contractName?: string;
+    }
     | undefined;
 
   if (!ft?.address) return null;

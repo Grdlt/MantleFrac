@@ -38,7 +38,7 @@ export async function getVault(vaultId: string): Promise<Vault | null> {
 export type NFTDisplay = {
   name?: string | null;
   description?: string | null;
-  thumbnail?: string | null;
+  thumbnail?: string | null; imageUrl?: string | null;
 };
 
 export async function getVaultNftDisplay(
@@ -49,7 +49,7 @@ export async function getVaultNftDisplay(
       vaultNftDisplay(network: $network, vaultId: $vaultId) {
         name
         description
-        thumbnail
+        imageUrl
       }
     }
   `;
@@ -59,7 +59,7 @@ export async function getVaultNftDisplay(
       vaultId,
     });
 
-    return res.vaultNftDisplay ?? null;
+    return { ...res.vaultNftDisplay, thumbnail: res.vaultNftDisplay?.imageUrl } ?? null;
   } catch (e) {
     return e as NFTDisplay;
   }

@@ -3,7 +3,7 @@ import { gqlFetch, DEFAULT_NETWORK } from "@/lib/graphql";
 export type Vault = {
   network: string;
   vaultId: string;
-  collection: string | null;
+  nftContract: string | null;
   tokenId: string | null;
   shareSymbol: string | null;
   state: string | null;
@@ -11,15 +11,20 @@ export type Vault = {
 
 export async function getVaults(limit = 50): Promise<Vault[]> {
   const query = `
-    query Vaults($network: String!, $limit: Int) {
-      vaults(network: $network, limit: $limit) { network vaultId collection tokenId shareSymbol state }
+    query Vaults($network: String, $limit: Int) {
+      vaults(network: $network, limit: $limit) { network vaultId nftContract tokenId shareSymbol state }
     }
   `;
-  const { vaults } = await gqlFetch<{ vaults: Vault[] }>(query, {
-    network: DEFAULT_NETWORK,
-    limit,
-  });
-  return vaults || [];
+  try {
+    const { vaults } = await gqlFetch<{ vaults: Vault[] }>(query, {
+      network: DEFAULT_NETWORK,
+      limit,
+    });
+    return vaults || [];
+  } catch (error) {
+    console.error("Failed to fetch vaults:", error);
+    return [];
+  }
 }
 
 export async function getFeeSchedule(vaultId: string): Promise<{
