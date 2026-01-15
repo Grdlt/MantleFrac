@@ -4,8 +4,6 @@ Transform any NFT or RWA into tradeable shares - A complete DeFi platform for Re
 
 MantleFrac is a production-ready RWA (Real World Assets) fractionalization platform built on Mantle Network.
 
-Built for Mantle Global Hackathon 2025 - RWA/RealFi Track
-
 ## Problem Statement
 
 Real World Assets (RWAs) like real estate, art, and collectibles are traditionally illiquid and inaccessible to average investors. MantleFrac solves this by:

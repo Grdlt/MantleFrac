@@ -4,7 +4,7 @@
 
 MantleFrac 是一个构建在 Mantle 网络上的生产级 RWA (Real World Assets) 碎片化平台。
 
-为 2025 Mantle 全球黑客松 RWA/RealFi 赛道构建
+
 
 ## 问题陈述
 
